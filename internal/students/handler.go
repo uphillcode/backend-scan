@@ -1,6 +1,7 @@
-package user
+package students
 
 import (
+	"backend-scan/internal/models"
 	"net/http"
 	"strconv"
 
@@ -20,10 +21,15 @@ func (h *Handler) GetStudent(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, students)
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos obtenidos correctamente",
+		Data:    students,
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) GetUser(c echo.Context) error {
+func (h *Handler) GetStudentId(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	student, err := h.service.GetStudent(uint(id))
 	if err != nil {
@@ -33,7 +39,7 @@ func (h *Handler) GetUser(c echo.Context) error {
 }
 
 func (h *Handler) CreateStudent(c echo.Context) error {
-	var student Student
+	var student models.StudentInsert
 	if err := c.Bind(&student); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
@@ -42,4 +48,24 @@ func (h *Handler) CreateStudent(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.JSON(http.StatusCreated, student)
+}
+
+func (h *Handler) UpdateStudent(c echo.Context) error {
+	var student models.Student
+	if err := c.Bind(&student); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	student, err := h.service.UpdateStudent(student)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusCreated, student)
+}
+func (h *Handler) DeleteStudent(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.service.DeleteStudent(uint(id))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	return c.JSON(http.StatusOK, "Student deleted")
 }

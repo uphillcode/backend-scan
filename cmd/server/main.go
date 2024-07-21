@@ -27,14 +27,23 @@
 package main
 
 import (
+	identities "backend-scan/internal/identity"
 	"backend-scan/internal/middleware"
-	student "backend-scan/internal/students"
+	"backend-scan/internal/students"
 	"backend-scan/pkg/database"
+	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("no .env file found")
+	}
+	log.Println("Starting server...")
+
+	// Reference to the echo instance :fire:
 	e := echo.New()
 
 	// Initialize the database
@@ -43,13 +52,28 @@ func main() {
 
 	middleware.Setup(e)
 
-	userRepo := student.NewRepository(db)
-	userService := student.NewService(userRepo)
-	userHandler := student.NewHandler(userService)
+	// User module setup
+	userRepo := students.NewRepository(db)
+	userService := students.NewService(userRepo)
+	userHandler := students.NewHandler(userService)
 
+	// Identity module setup
+	identityRepo := identities.NewRepository(db)
+	identityService := identities.NewService(identityRepo)
+	identityHandler := identities.NewHandler(identityService)
+
+	// User routes
 	e.GET("/students", userHandler.GetStudent)
-	e.GET("/student/:id", userHandler.GetStudent)
-	e.POST("/students", userHandler.CreateStudent)
+	e.GET("/student/:id", userHandler.GetStudentId)
+	e.POST("/student/create", userHandler.CreateStudent)
+	e.PUT("/student/:id", userHandler.UpdateStudent)
+	e.DELETE("/student/:id", userHandler.DeleteStudent)
+	// Identity routes
+	e.GET("/identities", identityHandler.GetEntities)
+	e.GET("/identity/:id", identityHandler.GetEntity)
+	e.POST("/identities", identityHandler.CreateEntity)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
+
+// go run cmd/server/main.go

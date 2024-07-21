@@ -1,11 +1,17 @@
-package user
+package students
 
-import "gorm.io/gorm"
+import (
+	"backend-scan/internal/models"
+
+	"gorm.io/gorm"
+)
 
 type Repository interface {
-	FindAll() ([]Student, error)
-	FindByID(id uint) (Student, error)
-	Create(students Student) (Student, error)
+	FindAll() ([]models.Student, error)
+	FindByID(id uint) (models.Student, error)
+	Create(students models.StudentInsert) (models.StudentInsert, error)
+	Update(students models.Student) (models.Student, error)
+	Delete(id uint) error
 }
 
 type repository struct {
@@ -16,25 +22,38 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repository{db}
 }
 
-func (r *repository) FindAll() ([]Student, error) {
-	var studentss []Student
-	if err := r.db.Find(&studentss).Error; err != nil {
+func (r *repository) FindAll() ([]models.Student, error) {
+	var students []models.Student
+	if err := r.db.Find(&students).Error; err != nil {
 		return nil, err
-	}
-	return studentss, nil
-}
-
-func (r *repository) FindByID(id uint) (Student, error) {
-	var students Student
-	if err := r.db.First(&students, id).Error; err != nil {
-		return Student{}, err
 	}
 	return students, nil
 }
 
-func (r *repository) Create(student Student) (Student, error) {
+func (r *repository) FindByID(id uint) (models.Student, error) {
+	var students models.Student
+	if err := r.db.First(&students, id).Error; err != nil {
+		return models.Student{}, err
+	}
+	return students, nil
+}
+
+func (r *repository) Create(student models.StudentInsert) (models.StudentInsert, error) {
 	if err := r.db.Create(&student).Error; err != nil {
-		return Student{}, err
+		return models.StudentInsert{}, err
 	}
 	return student, nil
+}
+
+func (r *repository) Update(student models.Student) (models.Student, error) {
+	if err := r.db.Save(&student).Error; err != nil {
+		return models.Student{}, err
+	}
+	return student, nil
+}
+func (r *repository) Delete(id uint) error {
+	if err := r.db.Delete(&models.Student{}, id).Error; err != nil {
+		return err
+	}
+	return nil
 }
