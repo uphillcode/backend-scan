@@ -43,35 +43,33 @@ func main() {
 	}
 	log.Println("Starting server...")
 
-	// Reference to the echo instance :fire:
+	// Reference echo instance :fire:
 	e := echo.New()
 
-	// Initialize the database
+	// the database
 	database.InitDB()
 	db := database.DB
 
 	middleware.Setup(e)
 
-	// User module setup
 	userRepo := students.NewRepository(db)
 	userService := students.NewService(userRepo)
 	userHandler := students.NewHandler(userService)
 
-	// Identity module setup
 	identityRepo := identities.NewRepository(db)
 	identityService := identities.NewService(identityRepo)
 	identityHandler := identities.NewHandler(identityService)
 
-	// User routes
+	// routes
 	e.GET("/students", userHandler.GetStudent)
 	e.GET("/student/:id", userHandler.GetStudentId)
 	e.POST("/student/create", userHandler.CreateStudent)
-	e.PUT("/student/:id", userHandler.UpdateStudent)
-	e.DELETE("/student/:id", userHandler.DeleteStudent)
-	// Identity routes
+	e.PUT("/student/update/:id", userHandler.UpdateStudent)
+	e.DELETE("/student/delete/:id", userHandler.DeleteStudent)
+
 	e.GET("/identities", identityHandler.GetEntities)
 	e.GET("/identity/:id", identityHandler.GetEntity)
-	e.POST("/identities", identityHandler.CreateEntity)
+	e.POST("/identity/create", identityHandler.CreateEntity)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

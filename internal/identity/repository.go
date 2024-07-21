@@ -9,7 +9,7 @@ import (
 type Repository interface {
 	FindAll() ([]models.Identity, error)
 	FindByID(id uint) (models.Identity, error)
-	Create(entitys models.Identity) (models.Identity, error)
+	Create(entitys models.IdentityAdd) (models.IdentityAdd, error)
 }
 
 type repository struct {
@@ -36,9 +36,9 @@ func (r *repository) FindByID(id uint) (models.Identity, error) {
 	return entities, nil
 }
 
-func (r *repository) Create(entity models.Identity) (models.Identity, error) {
+func (r *repository) Create(entity models.IdentityAdd) (models.IdentityAdd, error) {
 	if err := r.db.Create(&entity).Error; err != nil {
-		return models.Identity{}, err
+		return models.IdentityAdd{}, err
 	}
 	return entity, nil
 }

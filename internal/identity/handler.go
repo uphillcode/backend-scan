@@ -34,7 +34,7 @@ func (h *Handler) GetEntity(c echo.Context) error {
 }
 
 func (h *Handler) CreateEntity(c echo.Context) error {
-	var entity models.Identity
+	var entity models.IdentityAdd
 	if err := c.Bind(&entity); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}

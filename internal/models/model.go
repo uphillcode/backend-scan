@@ -14,22 +14,20 @@ import (
 
 type Student struct {
 	Idstudent      uint      `gorm:"primaryKey"`
-	Code           string    `json:"code"`
+	Code           uint      `json:"code"`
 	Carrer         string    `json:"carrer"`
-	Dni            string    `json:"dni"`
+	Dni            uint      `json:"dni"`
 	Fullname       string    `json:"fullname"`
 	Modality       string    `json:"modality"`
 	Fecha_registro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"`
-	// Fecha_registro time.Time `json:"fecha_registro"`
-
 }
 
 type Identity struct {
 	Ididentity     uint      `gorm:"primaryKey"`
-	Code           string    `json:"code"`
-	Litho          string    `json:"litho"`
+	Code           uint      `json:"code"`
+	Litho          uint      `json:"litho"`
 	Value          string    `json:"value"`
-	Increment      string    `json:"increment"`
+	Increment      uint      `json:"increment"`
 	Fecha_registro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"`
 }
 
@@ -46,6 +44,16 @@ type StudentInsert struct {
 	Fecha_registro *time.Time
 }
 
+type IdentityAdd struct {
+	Identity
+	Ididentity     *uint
+	Fecha_registro *time.Time
+}
+
 func (StudentInsert) TableName() string {
 	return "students"
+}
+
+func (IdentityAdd) TableName() string {
+	return "identities"
 }

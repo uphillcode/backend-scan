@@ -7,7 +7,7 @@ import (
 type Service interface {
 	GetEntities() ([]models.Identity, error)
 	GetEntity(id uint) (models.Identity, error)
-	CreateEntity(entity models.Identity) (models.Identity, error)
+	CreateEntity(entity models.IdentityAdd) (models.IdentityAdd, error)
 }
 type service struct {
 	repo Repository
@@ -25,6 +25,6 @@ func (s *service) GetEntity(id uint) (models.Identity, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *service) CreateEntity(entity models.Identity) (models.Identity, error) {
+func (s *service) CreateEntity(entity models.IdentityAdd) (models.IdentityAdd, error) {
 	return s.repo.Create(entity)
 }
