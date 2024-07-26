@@ -9,8 +9,8 @@ import (
 type Repository interface {
 	FindAll() ([]models.Student, error)
 	FindByID(id uint) (models.Student, error)
-	Create(student models.StudentInsert) (models.StudentInsert, error)
-	Update(id uint, student models.StudentInsert) (models.Student, error)
+	Create(student models.StudentAdd) (models.StudentAdd, error)
+	Update(id uint, student models.StudentAdd) (models.Student, error)
 	Delete(id uint) error
 }
 
@@ -38,14 +38,14 @@ func (r *repository) FindByID(id uint) (models.Student, error) {
 	return student, nil
 }
 
-func (r *repository) Create(student models.StudentInsert) (models.StudentInsert, error) {
+func (r *repository) Create(student models.StudentAdd) (models.StudentAdd, error) {
 	if err := r.db.Create(&student).Error; err != nil {
-		return models.StudentInsert{}, err
+		return models.StudentAdd{}, err
 	}
 	return student, nil
 }
 
-func (r *repository) Update(id uint, student models.StudentInsert) (models.Student, error) {
+func (r *repository) Update(id uint, student models.StudentAdd) (models.Student, error) {
 	var existingStudent models.Student
 	if err := r.db.First(&existingStudent, id).Error; err != nil {
 		return models.Student{}, err

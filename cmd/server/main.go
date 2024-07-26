@@ -29,6 +29,7 @@ package main
 import (
 	identities "backend-scan/internal/identity"
 	"backend-scan/internal/middleware"
+	studentRespones "backend-scan/internal/studentRespone"
 	"backend-scan/internal/students"
 	"backend-scan/pkg/database"
 	"log"
@@ -60,6 +61,10 @@ func main() {
 	identityService := identities.NewService(identityRepo)
 	identityHandler := identities.NewHandler(identityService)
 
+	studensRepo := studentRespones.NewRepository(db)
+	studensService := studentRespones.NewService(studensRepo)
+	studentHandler := studentRespones.NewHandler(studensService)
+
 	// routes
 	e.GET("/students", userHandler.GetStudent)
 	e.GET("/student/:id", userHandler.GetStudentId)
@@ -70,6 +75,10 @@ func main() {
 	e.GET("/identities", identityHandler.GetEntities)
 	e.GET("/identity/:id", identityHandler.GetEntity)
 	e.POST("/identity/create", identityHandler.CreateEntity)
+
+	e.GET("/studentsResponses", studentHandler.GetStudentResponses)
+	e.GET("/studentResponse/:id", studentHandler.GetStudentResponse)
+	e.POST("/studentResponse/create", studentHandler.CreateStudentResponse)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -21,7 +21,13 @@ func (h *Handler) GetEntities(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, entities)
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos obtenidos correctamente",
+		Data:    entities,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) GetEntity(c echo.Context) error {

@@ -5,8 +5,8 @@ import "backend-scan/internal/models"
 type Service interface {
 	GetStudents() ([]models.Student, error)
 	GetStudent(id uint) (models.Student, error)
-	CreateStudent(student models.StudentInsert) (models.StudentInsert, error)
-	UpdateStudent(id uint, student models.StudentInsert) (models.Student, error)
+	CreateStudent(student models.StudentAdd) (models.StudentAdd, error)
+	UpdateStudent(id uint, student models.StudentAdd) (models.Student, error)
 	DeleteStudent(id uint) error
 }
 
@@ -26,11 +26,11 @@ func (s *service) GetStudent(id uint) (models.Student, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *service) CreateStudent(student models.StudentInsert) (models.StudentInsert, error) {
+func (s *service) CreateStudent(student models.StudentAdd) (models.StudentAdd, error) {
 	return s.repo.Create(student)
 }
 
-func (s *service) UpdateStudent(id uint, student models.StudentInsert) (models.Student, error) {
+func (s *service) UpdateStudent(id uint, student models.StudentAdd) (models.Student, error) {
 	return s.repo.Update(id, student)
 }
 
