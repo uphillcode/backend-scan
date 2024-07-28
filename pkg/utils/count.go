@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -12,11 +10,18 @@ type ColumnCount struct {
 }
 
 // CountByColumn cuenta los registros en una tabla específica basada en una columna específica.
-func CountByColumn(db *gorm.DB, tableName, columnName string) (int64, error) {
-	var count int64
-	query := fmt.Sprintf("%s IS NOT NULL", columnName)
-	if err := db.Table(tableName).Where(query).Count(&count).Error; err != nil {
-		return 0, err
+
+type CountResult struct {
+	Column string `json:"column"`
+	Count  int    `json:"count"`
+}
+
+func GetGroupedColumnsCount(db *gorm.DB, table string, column string) ([]CountResult, error) {
+	var results []CountResult
+	query := `SELECT ` + column + ` AS ` + column + `, COUNT(*) AS count FROM ` + table + ` GROUP BY ` + column
+	// query := `SELECT ` + column + ` AS column, COUNT(*) AS count FROM ` + table + ` GROUP BY ` + column
+	if err := db.Raw(query).Scan(&results).Error; err != nil {
+		return nil, err
 	}
-	return count, nil
+	return results, nil
 }

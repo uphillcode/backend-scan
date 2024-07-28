@@ -15,7 +15,8 @@ type Repository interface {
 	Update(id uint, setting models.SettingAdd) (models.Setting, error)
 	UpdateData(id uint, updates map[string]interface{}) (models.Setting, error)
 	Delete(id uint) error
-	CountByColumn(tableName, columnName string) (int64, error)
+	// CountByColumn(tableName, columnName string) (int64, error)
+	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
 }
 
 type repository struct {
@@ -106,7 +107,6 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 // }
 
 // otros métodos...
-
-func (r *repository) CountByColumn(tableName, columnName string) (int64, error) {
-	return utils.CountByColumn(r.db, tableName, columnName)
+func (r *repository) GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error) {
+	return utils.GetGroupedColumnsCount(r.db, table, column)
 }

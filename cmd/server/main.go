@@ -67,6 +67,8 @@ func main() {
 	e.POST("/studentResponse/create", studentHandler.CreateStudentResponse)
 
 	// para contrar y hacer los cambios necesarios en el código
-	e.GET("/count/:table/:column", settingHandler.CountByColumn)
+	// e.GET("/count/:table/:column", settingHandler.CountByColumn)
+	e.GET("/count/:table/:column", settingHandler.GetGroupedColumnsCount)
+
 	e.Logger.Fatal(e.Start(":8080"))
 }

@@ -1,6 +1,9 @@
 package settings
 
-import "backend-scan/internal/models"
+import (
+	"backend-scan/internal/models"
+	"backend-scan/pkg/utils"
+)
 
 type Service interface {
 	GetSettings() ([]models.Setting, error)
@@ -9,7 +12,8 @@ type Service interface {
 	UpdateSetting(id uint, settings models.SettingAdd) (models.Setting, error)
 	UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error)
 	DeleteSetting(id uint) error
-	CountByColumn(tableName, columnName string) (int64, error)
+	// CountByColumn(tableName, columnName string) (int64, error)
+	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
 }
 
 type service struct {
@@ -47,6 +51,6 @@ func (s *service) DeleteSetting(id uint) error {
 	return s.repo.Delete(id)
 }
 
-func (s *service) CountByColumn(tableName, columnName string) (int64, error) {
-	return s.repo.CountByColumn(tableName, columnName)
+func (s *service) GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error) {
+	return s.repo.GetGroupedColumnsCount(table, column)
 }

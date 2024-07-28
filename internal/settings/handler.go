@@ -113,17 +113,30 @@ func (h *Handler) DeleteSetting(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) CountByColumn(c echo.Context) error {
-	tableName := c.Param("table")
-	columnName := c.Param("column")
-	count, err := h.service.CountByColumn(tableName, columnName)
+//	func (h *Handler) CountByColumn(c echo.Context) error {
+//		tableName := c.Param("table")
+//		columnName := c.Param("column")
+//		count, err := h.service.CountByColumn(tableName, columnName)
+//		if err != nil {
+//			return c.JSON(http.StatusInternalServerError, err)
+//		}
+//		response := models.ResponseCustom[any]{
+//			State:   "success",
+//			Message: "Count retrieved successfully",
+//			Data:    count,
+//		}
+//		return c.JSON(http.StatusOK, response)
+//	}
+func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
+	table := c.Param("table")
+	column := c.Param("column")
+	results, err := h.service.GetGroupedColumnsCount(table, column)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	response := models.ResponseCustom[any]{
-		State:   "success",
-		Message: "Count retrieved successfully",
-		Data:    count,
-	}
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"state":   "success",
+		"message": "Count retrieved successfully",
+		"data":    results,
+	})
 }
