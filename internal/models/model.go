@@ -111,3 +111,8 @@ type StudentResponseAdd struct {
 func (StudentResponseAdd) TableName() string {
 	return "student_responses"
 }
+
+type ColumnCount struct {
+	Column string
+	Count  int64
+}

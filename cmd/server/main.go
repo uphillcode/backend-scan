@@ -49,7 +49,7 @@ func main() {
 	e.GET("/setting/:id", settingHandler.GetSettingId)
 	e.POST("/setting/create", settingHandler.CreateSetting)
 	e.PUT("/setting/update/:id", settingHandler.UpdateSetting)
-	e.PATCH("/setting/update/:id", settingHandler.UpdateSetting)
+	e.PATCH("/setting/update/:id", settingHandler.UpdateSettingData)
 	e.DELETE("/setting/delete/:id", settingHandler.DeleteSetting)
 
 	e.GET("/students", userHandler.GetStudent)
@@ -66,5 +66,7 @@ func main() {
 	e.GET("/studentResponse/:id", studentHandler.GetStudentResponse)
 	e.POST("/studentResponse/create", studentHandler.CreateStudentResponse)
 
+	// para contrar y hacer los cambios necesarios en el código
+	e.GET("/count/:table/:column", settingHandler.CountByColumn)
 	e.Logger.Fatal(e.Start(":8080"))
 }

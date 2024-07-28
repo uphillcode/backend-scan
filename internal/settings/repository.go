@@ -2,6 +2,7 @@ package settings
 
 import (
 	"backend-scan/internal/models"
+	"backend-scan/pkg/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -14,6 +15,7 @@ type Repository interface {
 	Update(id uint, setting models.SettingAdd) (models.Setting, error)
 	UpdateData(id uint, updates map[string]interface{}) (models.Setting, error)
 	Delete(id uint) error
+	CountByColumn(tableName, columnName string) (int64, error)
 }
 
 type repository struct {
@@ -76,7 +78,8 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 	if err := r.db.First(&existingSetting, id).Error; err != nil {
 		return models.Setting{}, err
 	}
-
+	// cuando quieras actualizar un campo en automatico
+	// updates["delete_at"] = time.Now().Format("2006-01-02 15:04:05")
 	// Solo actualizar los campos que están en el mapa de actualizaciones
 	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
 		return models.Setting{}, err
@@ -101,3 +104,9 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 // 	}
 // 	return existingSetting, nil
 // }
+
+// otros métodos...
+
+func (r *repository) CountByColumn(tableName, columnName string) (int64, error) {
+	return utils.CountByColumn(r.db, tableName, columnName)
+}

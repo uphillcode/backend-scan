@@ -57,6 +57,24 @@ func (h *Handler) CreateSetting(c echo.Context) error {
 
 func (h *Handler) UpdateSetting(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
+	var setting models.SettingAdd
+	if err := c.Bind(&setting); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	updatedSetting, err := h.service.UpdateSetting(uint(id), setting)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos actualizados correctamente",
+		Data:    updatedSetting,
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
+func (h *Handler) UpdateSettingData(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
 
 	// Crear un mapa para los campos que se van a actualizar
 	updates := make(map[string]interface{})
@@ -91,6 +109,21 @@ func (h *Handler) DeleteSetting(c echo.Context) error {
 	response := models.ResponseCustom[any]{
 		State:   "success",
 		Message: "Datos eliminados correctamente",
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
+func (h *Handler) CountByColumn(c echo.Context) error {
+	tableName := c.Param("table")
+	columnName := c.Param("column")
+	count, err := h.service.CountByColumn(tableName, columnName)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Count retrieved successfully",
+		Data:    count,
 	}
 	return c.JSON(http.StatusOK, response)
 }
