@@ -36,7 +36,12 @@ func (h *Handler) GetEntity(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, entity)
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos obtenidos correctamente",
+		Data:    entity,
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) CreateEntity(c echo.Context) error {
@@ -48,5 +53,12 @@ func (h *Handler) CreateEntity(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusCreated, entity)
+
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos guardados correctamente",
+		Data:    entity,
+	}
+
+	return c.JSON(http.StatusCreated, response)
 }

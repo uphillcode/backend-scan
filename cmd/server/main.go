@@ -1,35 +1,10 @@
-// package main
-
-// import (
-// 	"backend-scan/config"
-// 	"backend-scan/internal/middleware"
-// 	user "backend-scan/internal/students"
-
-// 	"github.com/labstack/echo/v4"
-// )
-
-// func main() {
-// 	e := echo.New()
-// 	db := config.InitDB()
-
-// 	middleware.Setup(e)
-
-// 	userRepo := user.NewRepository(db)
-// 	userService := user.NewService(userRepo)
-// 	userHandler := user.NewHandler(userService)
-
-// 	e.GET("/users", userHandler.GetUsers)
-// 	e.GET("/user/:id", userHandler.GetUser)
-// 	e.POST("/users", userHandler.CreateUser)
-
-//		e.Logger.Fatal(e.Start(":8080"))
-//	}
 package main
 
 import (
 	identities "backend-scan/internal/identity"
 	"backend-scan/internal/middleware"
-	studentRespones "backend-scan/internal/studentRespone"
+	"backend-scan/internal/settings"
+	studentResponses "backend-scan/internal/studentRespone"
 	"backend-scan/internal/students"
 	"backend-scan/pkg/database"
 	"log"
@@ -57,15 +32,26 @@ func main() {
 	userService := students.NewService(userRepo)
 	userHandler := students.NewHandler(userService)
 
+	settingRepo := settings.NewRepository(db)
+	settingService := settings.NewService(settingRepo)
+	settingHandler := settings.NewHandler(settingService)
+
 	identityRepo := identities.NewRepository(db)
 	identityService := identities.NewService(identityRepo)
 	identityHandler := identities.NewHandler(identityService)
 
-	studensRepo := studentRespones.NewRepository(db)
-	studensService := studentRespones.NewService(studensRepo)
-	studentHandler := studentRespones.NewHandler(studensService)
+	studentsRepo := studentResponses.NewRepository(db)
+	studentsService := studentResponses.NewService(studentsRepo)
+	studentHandler := studentResponses.NewHandler(studentsService)
 
 	// routes
+	e.GET("/settings", settingHandler.GetSetting)
+	e.GET("/setting/:id", settingHandler.GetSettingId)
+	e.POST("/setting/create", settingHandler.CreateSetting)
+	e.PUT("/setting/update/:id", settingHandler.UpdateSetting)
+	e.PATCH("/setting/update/:id", settingHandler.UpdateSetting)
+	e.DELETE("/setting/delete/:id", settingHandler.DeleteSetting)
+
 	e.GET("/students", userHandler.GetStudent)
 	e.GET("/student/:id", userHandler.GetStudentId)
 	e.POST("/student/create", userHandler.CreateStudent)
@@ -82,5 +68,3 @@ func main() {
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
-
-// go run cmd/server/main.go

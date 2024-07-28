@@ -7,6 +7,22 @@ import (
 	"time"
 )
 
+type Setting struct {
+	Id       uint      `gorm:"primaryKey" json:"id"`
+	Table    string    `json:"table"`
+	Semestre string    `json:"semestre"`
+	CreateAt time.Time `json:"create_at" gorm:"default:CURRENT_TIMESTAMP"`
+	DeleteAt string    `json:"delete_at"`
+	State    string    `json:"state"`
+}
+
+type SettingAdd struct {
+	Setting
+	Id       *uint      `gorm:"primaryKey" json:"id"`
+	CreateAt *time.Time `json:"create_at" gorm:"default:CURRENT_TIMESTAMP"`
+	DeleteAt *string    `json:"delete_at"`
+}
+
 type Student struct {
 	Idstudent     uint      `gorm:"primaryKey" json:"id_student"`
 	Code          uint      `json:"code"`
@@ -14,7 +30,8 @@ type Student struct {
 	Dni           uint      `json:"dni"`
 	Fullname      string    `json:"fullname"`
 	Modality      string    `json:"modality"`
-	FechaRegistro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"` }
+	FechaRegistro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"`
+}
 
 type Identity struct {
 	Ididentity    uint      `gorm:"primaryKey" json:"id_identity"`
@@ -22,7 +39,8 @@ type Identity struct {
 	Litho         uint      `json:"litho"`
 	Value         string    `json:"value"`
 	Increment     uint      `json:"increment"`
-	FechaRegistro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"` }
+	FechaRegistro time.Time `json:"fecha_registro" gorm:"default:CURRENT_TIMESTAMP"`
+}
 
 type Response struct {
 	StudentID      int    `json:"student_id"`
@@ -56,7 +74,8 @@ type StudentResponse struct {
 type ResponseCustom[T any] struct {
 	State   string `json:"state"`
 	Message string `json:"message"`
-	Error   string `json:"error,omitempty"` Data    T      `json:"data,omitempty"`
+	Error   string `json:"error,omitempty"`
+	Data    T      `json:"data,omitempty"`
 }
 
 type StudentAdd struct {
@@ -77,6 +96,9 @@ func (StudentAdd) TableName() string {
 
 func (IdentityAdd) TableName() string {
 	return "identities"
+}
+func (SettingAdd) TableName() string {
+	return "settings"
 }
 
 type StudentResponseAdd struct {
