@@ -61,14 +61,14 @@ func (h *Handler) UpdateSetting(c echo.Context) error {
 	// Crear un mapa para los campos que se van a actualizar
 	updates := make(map[string]interface{})
 
-	if semestre := c.FormValue("semestre"); semestre != "" {
-		updates["semestre"] = semestre
+	// Parsear el JSON del cuerpo de la solicitud
+	if err := c.Bind(&updates); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
 	}
-	if state := c.FormValue("state"); state != "" {
-		updates["state"] = state
-	}
-	if deleteAt := c.FormValue("delete_at"); deleteAt != "" {
-		updates["delete_at"] = deleteAt
+
+	// Verificar si el mapa de actualizaciones está vacío
+	if len(updates) == 0 {
+		return c.JSON(http.StatusBadRequest, "No fields to update")
 	}
 
 	updatedSetting, err := h.service.UpdateSettingData(uint(id), updates)
@@ -93,6 +93,4 @@ func (h *Handler) DeleteSetting(c echo.Context) error {
 		Message: "Datos eliminados correctamente",
 	}
 	return c.JSON(http.StatusOK, response)
-
-	// NoContent(http.StatusNoContent,response)
 }

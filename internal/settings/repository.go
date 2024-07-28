@@ -12,7 +12,7 @@ type Repository interface {
 	FindByID(id uint) (models.Setting, error)
 	Create(setting models.SettingAdd) (models.SettingAdd, error)
 	Update(id uint, setting models.SettingAdd) (models.Setting, error)
-	UpdateData(id uint, setting map[string]interface{}) (models.Setting, error)
+	UpdateData(id uint, updates map[string]interface{}) (models.Setting, error)
 	Delete(id uint) error
 }
 
@@ -77,12 +77,7 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 		return models.Setting{}, err
 	}
 
-	// Comprobar si "delete_at" está en el mapa de actualizaciones y actualizarlo con la fecha actual
-	if _, ok := updates["delete_at"]; ok {
-		updates["delete_at"] = time.Now().Format("2006-01-02 15:04:05")
-	}
-
-	// Utilizar `Updates` para actualizar solo los campos proporcionados
+	// Solo actualizar los campos que están en el mapa de actualizaciones
 	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
 		return models.Setting{}, err
 	}
@@ -95,10 +90,12 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 // 		return models.Setting{}, err
 // 	}
 
+// 	// Agregar la fecha y hora actual al campo delete_at si está en el mapa de actualizaciones
 // 	if _, ok := updates["delete_at"]; ok {
-// 		updates["delete_at"] = time.Now()
+// 		updates["delete_at"] = time.Now().Format("2006-01-02 15:04:05")
 // 	}
 
+// 	// Utilizar `Updates` para actualizar solo los campos proporcionados
 // 	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
 // 		return models.Setting{}, err
 // 	}

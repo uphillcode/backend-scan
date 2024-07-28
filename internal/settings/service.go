@@ -1,16 +1,13 @@
 package settings
 
-import (
-	"backend-scan/internal/models"
-	"time"
-)
+import "backend-scan/internal/models"
 
 type Service interface {
 	GetSettings() ([]models.Setting, error)
 	GetSetting(id uint) (models.Setting, error)
 	CreateSetting(settings models.SettingAdd) (models.SettingAdd, error)
 	UpdateSetting(id uint, settings models.SettingAdd) (models.Setting, error)
-	UpdateSettingData(id uint, settings models.SettingAdd) (models.Setting, error)
+	UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error)
 	DeleteSetting(id uint) error
 }
 
@@ -37,23 +34,13 @@ func (s *service) CreateSetting(settings models.SettingAdd) (models.SettingAdd, 
 func (s *service) UpdateSetting(id uint, settings models.SettingAdd) (models.Setting, error) {
 	return s.repo.Update(id, settings)
 }
-
-func (s *service) UpdateSettingData(id uint, settings models.SettingAdd) (models.Setting, error) {
-	updates := make(map[string]interface{})
-
-	if settings.Table != "" {
-		updates["table"] = settings.Table
-	}
-	if settings.Semestre != "" {
-		updates["semestre"] = settings.Semestre
-	}
-	if settings.State != "" {
-		updates["state"] = settings.State
-	}
-	updates["delete_at"] = time.Now()
-
+func (s *service) UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error) {
 	return s.repo.UpdateData(id, updates)
 }
+
+// func (s *service) UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error) {
+// 	return s.repo.UpdateData(id, updates)
+// }
 
 func (s *service) DeleteSetting(id uint) error {
 	return s.repo.Delete(id)
