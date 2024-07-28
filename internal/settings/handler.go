@@ -113,20 +113,6 @@ func (h *Handler) DeleteSetting(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-//	func (h *Handler) CountByColumn(c echo.Context) error {
-//		tableName := c.Param("table")
-//		columnName := c.Param("column")
-//		count, err := h.service.CountByColumn(tableName, columnName)
-//		if err != nil {
-//			return c.JSON(http.StatusInternalServerError, err)
-//		}
-//		response := models.ResponseCustom[any]{
-//			State:   "success",
-//			Message: "Count retrieved successfully",
-//			Data:    count,
-//		}
-//		return c.JSON(http.StatusOK, response)
-//	}
 func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
 	table := c.Param("table")
 	column := c.Param("column")
@@ -134,9 +120,34 @@ func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
+
+	// Construir la respuesta con el campo dinámico
+	data := []map[string]interface{}{}
+	for _, result := range results {
+		data = append(data, map[string]interface{}{
+			column:  result.ColumnValue,
+			"count": result.Count,
+		})
+	}
+
+	response := map[string]interface{}{
 		"state":   "success",
 		"message": "Count retrieved successfully",
-		"data":    results,
-	})
+		"data":    data,
+	}
+	return c.JSON(http.StatusOK, response)
 }
+
+// func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
+// 	table := c.Param("table")
+// 	column := c.Param("column")
+// 	results, err := h.service.GetGroupedColumnsCount(table, column)
+// 	if err != nil {
+// 		return c.JSON(http.StatusInternalServerError, err)
+// 	}
+// 	return c.JSON(http.StatusOK, map[string]interface{}{
+// 		"state":   "success",
+// 		"message": "Count retrieved successfully",
+// 		"data":    results,
+// 	})
+// }
