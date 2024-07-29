@@ -2,6 +2,8 @@ package settings
 
 import (
 	"backend-scan/internal/models"
+	"backend-scan/internal/operations"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -76,15 +78,12 @@ func (h *Handler) UpdateSetting(c echo.Context) error {
 func (h *Handler) UpdateSettingData(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 
-	// Crear un mapa para los campos que se van a actualizar
 	updates := make(map[string]interface{})
 
-	// Parsear el JSON del cuerpo de la solicitud
 	if err := c.Bind(&updates); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	// Verificar si el mapa de actualizaciones está vacío
 	if len(updates) == 0 {
 		return c.JSON(http.StatusBadRequest, "No fields to update")
 	}
@@ -121,7 +120,6 @@ func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	// Construir la respuesta con el campo dinámico
 	data := []map[string]interface{}{}
 	for _, result := range results {
 		data = append(data, map[string]interface{}{
@@ -138,16 +136,26 @@ func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-// func (h *Handler) GetGroupedColumnsCount(c echo.Context) error {
-// 	table := c.Param("table")
-// 	column := c.Param("column")
-// 	results, err := h.service.GetGroupedColumnsCount(table, column)
-// 	if err != nil {
-// 		return c.JSON(http.StatusInternalServerError, err)
-// 	}
-// 	return c.JSON(http.StatusOK, map[string]interface{}{
-// 		"state":   "success",
-// 		"message": "Count retrieved successfully",
-// 		"data":    results,
-// 	})
-// }
+func (h *Handler) HandleComplexOperation(c echo.Context) error {
+	var req struct {
+		Operations []string `json:"operations"`
+	}
+	if err := c.Bind(&req); err != nil {
+		fmt.Println("Error binding request:", err)
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	fmt.Println("Received operations:", req.Operations)
+	ctx := c.Request().Context()
+	manager := operations.NewOperationManager()
+	fmt.Println("Manager created")
+	manager.RegisterOperation(operations.NewCreateOperation(h.service))
+	fmt.Println("CreateOperation registered")
+
+	if err := manager.ExecuteOperations(ctx, req.Operations); err != nil {
+		fmt.Println("Error executing operations:", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Operations executed successfully"})
+}

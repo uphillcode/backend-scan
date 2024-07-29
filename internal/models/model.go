@@ -116,3 +116,9 @@ type ColumnCount struct {
 	Column string
 	Count  int64
 }
+
+type Duplicate struct {
+	ID          uint   `gorm:"primaryKey" json:"id"`
+	ColumnValue string `gorm:"column_value"`
+	Count       int    `gorm:"count"`
+}

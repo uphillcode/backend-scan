@@ -15,8 +15,8 @@ type Repository interface {
 	Update(id uint, setting models.SettingAdd) (models.Setting, error)
 	UpdateData(id uint, updates map[string]interface{}) (models.Setting, error)
 	Delete(id uint) error
-	// CountByColumn(tableName, columnName string) (int64, error)
 	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
+	InsertDuplicateInNewTable(columnValue string, count int) error // Este método debe ser añadido
 }
 
 type repository struct {
@@ -67,6 +67,18 @@ func (r *repository) Update(id uint, setting models.SettingAdd) (models.Setting,
 	return existingSetting, nil
 }
 
+func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models.Setting, error) {
+	var existingSetting models.Setting
+	if err := r.db.First(&existingSetting, id).Error; err != nil {
+		return models.Setting{}, err
+	}
+	// Actualizar solo los campos que están en el mapa de actualizaciones
+	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
+		return models.Setting{}, err
+	}
+	return existingSetting, nil
+}
+
 func (r *repository) Delete(id uint) error {
 	if err := r.db.Delete(&models.Setting{}, id).Error; err != nil {
 		return err
@@ -74,39 +86,15 @@ func (r *repository) Delete(id uint) error {
 	return nil
 }
 
-func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models.Setting, error) {
-	var existingSetting models.Setting
-	if err := r.db.First(&existingSetting, id).Error; err != nil {
-		return models.Setting{}, err
-	}
-	// cuando quieras actualizar un campo en automatico
-	// updates["delete_at"] = time.Now().Format("2006-01-02 15:04:05")
-	// Solo actualizar los campos que están en el mapa de actualizaciones
-	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
-		return models.Setting{}, err
-	}
-	return existingSetting, nil
-}
-
-// func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models.Setting, error) {
-// 	var existingSetting models.Setting
-// 	if err := r.db.First(&existingSetting, id).Error; err != nil {
-// 		return models.Setting{}, err
-// 	}
-
-// 	// Agregar la fecha y hora actual al campo delete_at si está en el mapa de actualizaciones
-// 	if _, ok := updates["delete_at"]; ok {
-// 		updates["delete_at"] = time.Now().Format("2006-01-02 15:04:05")
-// 	}
-
-// 	// Utilizar `Updates` para actualizar solo los campos proporcionados
-// 	if err := r.db.Model(&existingSetting).Updates(updates).Error; err != nil {
-// 		return models.Setting{}, err
-// 	}
-// 	return existingSetting, nil
-// }
-
-// otros métodos...
 func (r *repository) GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error) {
 	return utils.GetGroupedColumnsCount(r.db, table, column)
+}
+
+// Implementa el método InsertDuplicateInNewTable
+func (r *repository) InsertDuplicateInNewTable(columnValue string, count int) error {
+	duplicate := models.Duplicate{
+		ColumnValue: columnValue,
+		Count:       count,
+	}
+	return r.db.Create(&duplicate).Error
 }

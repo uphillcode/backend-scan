@@ -68,7 +68,9 @@ func main() {
 
 	// para contrar y hacer los cambios necesarios en el código
 	// e.GET("/count/:table/:column", settingHandler.CountByColumn)
-	e.GET("/count/:table/:column", settingHandler.GetGroupedColumnsCount)
+	// e.GET("/count/:table/:column", settingHandler.GetGroupedColumnsCount)
+	//para ejecutar procesos
+	e.POST("/complex-operations", settingHandler.HandleComplexOperation)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
