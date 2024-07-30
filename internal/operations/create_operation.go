@@ -34,7 +34,7 @@ func (c *CreateOperation) Execute(ctx context.Context) error {
 	// Procesar duplicados de students e insertarlos en la nueva tabla
 	for _, duplicate := range duplicateStudents {
 		fmt.Printf("Inserting duplicate from students: %v with count %d\n", duplicate.ColumnValue, duplicate.Count)
-		err = c.Service.InsertDuplicateInNewTable(duplicate.ColumnValue, duplicate.Count)
+		err = c.Service.InsertDuplicateInNewTable(duplicate.ColumnValue, duplicate.Count, table1)
 		if err != nil {
 			return err
 		}
@@ -49,7 +49,7 @@ func (c *CreateOperation) Execute(ctx context.Context) error {
 	// Procesar duplicados de identities e insertarlos en la nueva tabla
 	for _, duplicate := range duplicateIdentities {
 		fmt.Printf("Inserting duplicate from identities: %v with count %d\n", duplicate.ColumnValue, duplicate.Count)
-		err = c.Service.InsertDuplicateInNewTable(duplicate.ColumnValue, duplicate.Count)
+		err = c.Service.InsertDuplicateInNewTable(duplicate.ColumnValue, duplicate.Count, table2)
 		if err != nil {
 			return err
 		}

@@ -16,7 +16,7 @@ type Service interface {
 	UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error)
 	DeleteSetting(id uint) error
 	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
-	InsertDuplicateInNewTable(columnValue string, count int) error // Este método debe ser añadido
+	InsertDuplicateInNewTable(columnValue string, count int, table string) error // Este método debe ser añadido
 }
 
 type service struct {
@@ -56,6 +56,6 @@ func (s *service) GetGroupedColumnsCount(table string, column string) ([]utils.C
 }
 
 // Implementa el método InsertDuplicateInNewTable
-func (s *service) InsertDuplicateInNewTable(columnValue string, count int) error {
-	return s.repo.InsertDuplicateInNewTable(columnValue, count)
+func (s *service) InsertDuplicateInNewTable(columnValue string, count int, table string) error {
+	return s.repo.InsertDuplicateInNewTable(columnValue, count, table)
 }

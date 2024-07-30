@@ -7,5 +7,5 @@ import (
 
 type Service interface {
 	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
-	InsertDuplicateInNewTable(columnValue string, count int) error
+	InsertDuplicateInNewTable(columnValue string, count int, table_name string) error
 }

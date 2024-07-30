@@ -16,7 +16,7 @@ type Repository interface {
 	UpdateData(id uint, updates map[string]interface{}) (models.Setting, error)
 	Delete(id uint) error
 	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
-	InsertDuplicateInNewTable(columnValue string, count int) error // Este método debe ser añadido
+	InsertDuplicateInNewTable(columnValue string, count int, table string) error // Este método debe ser añadido
 }
 
 type repository struct {
@@ -91,10 +91,11 @@ func (r *repository) GetGroupedColumnsCount(table string, column string) ([]util
 }
 
 // Implementa el método InsertDuplicateInNewTable
-func (r *repository) InsertDuplicateInNewTable(columnValue string, count int) error {
+func (r *repository) InsertDuplicateInNewTable(columnValue string, count int, table string) error {
 	duplicate := models.Duplicate{
 		ColumnValue: columnValue,
 		Count:       count,
+		Table:       table,
 	}
 	return r.db.Create(&duplicate).Error
 }

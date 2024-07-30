@@ -121,4 +121,5 @@ type Duplicate struct {
 	ID          uint   `gorm:"primaryKey" json:"id"`
 	ColumnValue string `gorm:"column_value"`
 	Count       int    `gorm:"count"`
+	Table       string `gorm:"table_name"`
 }
