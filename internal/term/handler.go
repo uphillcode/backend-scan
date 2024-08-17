@@ -1,4 +1,4 @@
-package students
+package terms
 
 import (
 	"backend-scan/internal/models"
@@ -16,7 +16,7 @@ type Handler struct {
 func NewHandler(service Service) *Handler {
 	return &Handler{service}
 }
-func (h *Handler) GetStudent(c echo.Context) error {
+func (h *Handler) GetTerm(c echo.Context) error {
 	filters := models.FilterDto{
 		Text: c.QueryParam("text"),
 	}
@@ -24,7 +24,7 @@ func (h *Handler) GetStudent(c echo.Context) error {
 	// Registrar los filtros recibidos
 	fmt.Printf("Received filters: %+v", filters)
 
-	students, err := h.service.GetStudents(filters)
+	students, err := h.service.GetTerms(filters)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -36,21 +36,21 @@ func (h *Handler) GetStudent(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) GetStudentId(c echo.Context) error {
+func (h *Handler) GetTermId(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	student, err := h.service.GetStudent(uint(id))
+	student, err := h.service.GetTerm(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	return c.JSON(http.StatusOK, student)
 }
 
-func (h *Handler) CreateStudent(c echo.Context) error {
-	var student models.StudentAdd
+func (h *Handler) CreateTerm(c echo.Context) error {
+	var student models.TemdAdd
 	if err := c.Bind(&student); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	student, err := h.service.CreateStudent(student)
+	student, err := h.service.CreateTerm(student)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -62,13 +62,13 @@ func (h *Handler) CreateStudent(c echo.Context) error {
 	return c.JSON(http.StatusCreated, response)
 }
 
-func (h *Handler) UpdateStudent(c echo.Context) error {
+func (h *Handler) UpdateTerm(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	var student models.StudentAdd
+	var student models.TemdAdd
 	if err := c.Bind(&student); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	updatedStudent, err := h.service.UpdateStudent(uint(id), student)
+	updatedStudent, err := h.service.UpdateTerm(uint(id), student)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -80,9 +80,9 @@ func (h *Handler) UpdateStudent(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) DeleteStudent(c echo.Context) error {
+func (h *Handler) DeleteTerm(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	if err := h.service.DeleteStudent(uint(id)); err != nil {
+	if err := h.service.DeleteTerm(uint(id)); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	response := models.ResponseCustom[any]{

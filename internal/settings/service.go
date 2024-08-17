@@ -16,7 +16,13 @@ type Service interface {
 	UpdateSettingData(id uint, updates map[string]interface{}) (models.Setting, error)
 	DeleteSetting(id uint) error
 	GetGroupedColumnsCount(table string, column string) ([]utils.CountResult, error)
-	InsertDuplicateInNewTable(columnValue string, count int, table string) error // Este método debe ser añadido
+	InsertDuplicateInNewTable(columnValue string, count int, table string) error
+	FindAllIdentityWithoutMatchingStudents() ([]models.Identity, error)
+	InsertObservation(observation models.ObservationAdd) (models.Observation, error)
+	GetResponses() ([]models.StudentResponse, error)
+	FindAllStudentAndIdentity() ([]models.StudentAndIdentity, error)
+	GetClavesToCalification() ([]models.Cypher_code, error)
+	InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error
 }
 
 type service struct {
@@ -58,4 +64,26 @@ func (s *service) GetGroupedColumnsCount(table string, column string) ([]utils.C
 // Implementa el método InsertDuplicateInNewTable
 func (s *service) InsertDuplicateInNewTable(columnValue string, count int, table string) error {
 	return s.repo.InsertDuplicateInNewTable(columnValue, count, table)
+}
+
+func (s *service) FindAllIdentityWithoutMatchingStudents() ([]models.Identity, error) {
+	return s.repo.FindAllIdentityWithoutMatchingStudents()
+}
+
+func (s *service) InsertObservation(observation models.ObservationAdd) (models.Observation, error) {
+	return s.repo.InsertObservation(observation)
+}
+func (s *service) GetResponses() ([]models.StudentResponse, error) {
+	return s.repo.FindAllResponses()
+}
+func (s *service) FindAllStudentAndIdentity() ([]models.StudentAndIdentity, error) {
+	return s.repo.FindAllStudentAndIdentity()
+}
+
+func (s *service) GetClavesToCalification() ([]models.Cypher_code, error) {
+	return s.repo.GetClavesToCalification()
+}
+
+func (s *service) InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error {
+	return s.repo.InsertResponse(correctas, incorrectas, sinResponder, litho)
 }

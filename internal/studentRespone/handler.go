@@ -68,3 +68,21 @@ func (h *Handler) CreateStudentResponse(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, response)
 }
+
+func (h *Handler) UpdateStudentResponse(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var updates map[string]interface{}
+	if err := c.Bind(&updates); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	updatedEntity, err := h.service.updateResponse(uint(id), updates)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos actualizados correctamente",
+		Data:    updatedEntity,
+	}
+	return c.JSON(http.StatusOK, response)
+}

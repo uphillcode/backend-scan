@@ -1,8 +1,7 @@
-package students
+package histories
 
 import (
 	"backend-scan/internal/models"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,73 +15,67 @@ type Handler struct {
 func NewHandler(service Service) *Handler {
 	return &Handler{service}
 }
-func (h *Handler) GetStudent(c echo.Context) error {
-	filters := models.FilterDto{
-		Text: c.QueryParam("text"),
-	}
 
-	// Registrar los filtros recibidos
-	fmt.Printf("Received filters: %+v", filters)
-
-	students, err := h.service.GetStudents(filters)
+func (h *Handler) GetHistories(c echo.Context) error {
+	histories, err := h.service.GetHistories()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	response := models.ResponseCustom[any]{
 		State:   "success",
 		Message: "Datos obtenidos correctamente",
-		Data:    students,
+		Data:    histories,
 	}
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) GetStudentId(c echo.Context) error {
+func (h *Handler) GetHistoryId(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	student, err := h.service.GetStudent(uint(id))
+	history, err := h.service.GetHistory(uint(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
-	return c.JSON(http.StatusOK, student)
+	return c.JSON(http.StatusOK, history)
 }
 
-func (h *Handler) CreateStudent(c echo.Context) error {
-	var student models.StudentAdd
-	if err := c.Bind(&student); err != nil {
+func (h *Handler) CreateHistory(c echo.Context) error {
+	var history models.HistoryAdd
+	if err := c.Bind(&history); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	student, err := h.service.CreateStudent(student)
+	history, err := h.service.CreateHistory(history)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	response := models.ResponseCustom[any]{
 		State:   "success",
 		Message: "Datos guardados correctamente",
-		Data:    student,
+		Data:    history,
 	}
 	return c.JSON(http.StatusCreated, response)
 }
 
-func (h *Handler) UpdateStudent(c echo.Context) error {
+func (h *Handler) UpdateHistory(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	var student models.StudentAdd
-	if err := c.Bind(&student); err != nil {
+	var history models.HistoryAdd
+	if err := c.Bind(&history); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
-	updatedStudent, err := h.service.UpdateStudent(uint(id), student)
+	updatedHistory, err := h.service.UpdateHistory(uint(id), history)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	response := models.ResponseCustom[any]{
 		State:   "success",
 		Message: "Datos actualizados correctamente",
-		Data:    updatedStudent,
+		Data:    updatedHistory,
 	}
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) DeleteStudent(c echo.Context) error {
+func (h *Handler) DeleteHistory(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
-	if err := h.service.DeleteStudent(uint(id)); err != nil {
+	if err := h.service.DeleteHistory(uint(id)); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 	response := models.ResponseCustom[any]{
@@ -90,4 +83,6 @@ func (h *Handler) DeleteStudent(c echo.Context) error {
 		Message: "Datos eliminados correctamente",
 	}
 	return c.JSON(http.StatusOK, response)
+
+	// NoContent(http.StatusNoContent,response)
 }

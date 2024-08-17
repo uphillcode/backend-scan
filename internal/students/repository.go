@@ -2,6 +2,7 @@ package students
 
 import (
 	"backend-scan/internal/models"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +13,7 @@ type Repository interface {
 	Create(student models.StudentAdd) (models.StudentAdd, error)
 	Update(id uint, student models.StudentAdd) (models.Student, error)
 	Delete(id uint) error
+	FindAllFiltered(filters models.FilterDto) ([]models.Student, error)
 }
 
 type repository struct {
@@ -54,6 +56,7 @@ func (r *repository) Update(id uint, student models.StudentAdd) (models.Student,
 	existingStudent.Code = student.Code
 	existingStudent.Carrer = student.Carrer
 	existingStudent.Dni = student.Dni
+	existingStudent.Tema = student.Tema
 	existingStudent.Fullname = student.Fullname
 	existingStudent.Modality = student.Modality
 
@@ -68,4 +71,19 @@ func (r *repository) Delete(id uint) error {
 		return err
 	}
 	return nil
+}
+func (r *repository) FindAllFiltered(filters models.FilterDto) ([]models.Student, error) {
+	var students []models.Student
+	query := r.db.Model(&models.Student{})
+
+	if filters.Text != "" {
+		query = query.Where("CONCAT(code, ' ', fullname) LIKE ?", "%"+filters.Text+"%")
+		// Registrar la consulta
+		fmt.Printf("Applying text filter: %s", filters.Text)
+	}
+
+	if err := query.Find(&students).Error; err != nil {
+		return nil, err
+	}
+	return students, nil
 }

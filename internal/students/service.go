@@ -3,7 +3,7 @@ package students
 import "backend-scan/internal/models"
 
 type Service interface {
-	GetStudents() ([]models.Student, error)
+	GetStudents(filters models.FilterDto) ([]models.Student, error)
 	GetStudent(id uint) (models.Student, error)
 	CreateStudent(student models.StudentAdd) (models.StudentAdd, error)
 	UpdateStudent(id uint, student models.StudentAdd) (models.Student, error)
@@ -18,8 +18,8 @@ func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) GetStudents() ([]models.Student, error) {
-	return s.repo.FindAll()
+func (s *service) GetStudents(filters models.FilterDto) ([]models.Student, error) {
+	return s.repo.FindAllFiltered(filters)
 }
 
 func (s *service) GetStudent(id uint) (models.Student, error) {

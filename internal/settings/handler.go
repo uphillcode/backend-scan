@@ -100,6 +100,19 @@ func (h *Handler) UpdateSettingData(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+func (h *Handler) FindAllStudentAndIdentity(c echo.Context) error {
+	students, err := h.service.FindAllStudentAndIdentity()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos obtenidos correctamente",
+		Data:    students,
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
 func (h *Handler) DeleteSetting(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := h.service.DeleteSetting(uint(id)); err != nil {
@@ -150,6 +163,7 @@ func (h *Handler) HandleComplexOperation(c echo.Context) error {
 	manager := operations.NewOperationManager()
 	fmt.Println("Manager created")
 	manager.RegisterOperation(operations.NewCreateOperation(h.service))
+	// manager.RegisterOperation(calification.NewCalificationOperation())
 	fmt.Println("CreateOperation registered")
 
 	if err := manager.ExecuteOperations(ctx, req.Operations); err != nil {

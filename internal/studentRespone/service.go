@@ -8,6 +8,7 @@ type Service interface {
 	GetStudentResponses() ([]models.StudentResponse, error)
 	GetStudentResponse(id uint) (models.StudentResponse, error)
 	CreateStudentResponse(entity models.StudentResponseAdd) (models.StudentResponse, error)
+	updateResponse(id uint, updates map[string]interface{}) (models.StudentResponse, error)
 }
 
 type service struct {
@@ -32,4 +33,9 @@ func (s *service) GetStudentResponse(id uint) (models.StudentResponse, error) {
 
 func (s *service) CreateStudentResponse(responses models.StudentResponseAdd) (models.StudentResponse, error) {
 	return s.repo.Create(responses)
+
+}
+
+func (s *service) updateResponse(id uint, updates map[string]interface{}) (models.StudentResponse, error) {
+	return s.repo.UpdateData(id, updates)
 }

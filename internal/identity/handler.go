@@ -17,7 +17,10 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) GetEntities(c echo.Context) error {
-	entities, err := h.service.GetEntities()
+	filters := models.FilterDto{
+		Text: c.QueryParam("text"),
+	}
+	entities, err := h.service.GetEntities(filters)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -61,4 +64,22 @@ func (h *Handler) CreateEntity(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, response)
+}
+
+func (h *Handler) UpdateEntity(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var updates map[string]interface{}
+	if err := c.Bind(&updates); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+	updatedEntity, err := h.service.updateIdentity(uint(id), updates)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+	response := models.ResponseCustom[any]{
+		State:   "success",
+		Message: "Datos actualizados correctamente",
+		Data:    updatedEntity,
+	}
+	return c.JSON(http.StatusOK, response)
 }
