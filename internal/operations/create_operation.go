@@ -25,18 +25,15 @@ func (c *CreateOperation) Execute(ctx context.Context) error {
 	var table3 = "cypher_code"
 	var column = "code"
 
-	// Obtener configuraciones
 	settings, err := c.Service.GetSettings()
 	if err != nil {
 		return fmt.Errorf("error getting settings: %w", err)
 	}
 
-	// Determinar qué tablas están activas
 	table1Active := c.isTableActive(settings, table1)
 	table2Active := c.isTableActive(settings, table2)
 	table3Active := c.isTableActive(settings, table3)
 
-	// Usar switch para manejar diferentes casos
 	fmt.Println("table1Active: ", table1Active)
 	fmt.Println("table2Active: ", table2Active)
 	fmt.Println("table3Active: ", table3Active)
@@ -86,7 +83,7 @@ func (c *CreateOperation) handleTable1AndTable2(ctx context.Context, column stri
 				Tema:        "N",
 				State:       "0",
 				Type:        "identities",
-				CalendarsID: 1,
+				CalendarsID: 2,
 			},
 		}
 
@@ -111,7 +108,6 @@ func (c *CreateOperation) handleTable1AndTable2(ctx context.Context, column stri
 func (c *CreateOperation) handleTable3(ctx context.Context) error {
 	fmt.Println("Handling table3")
 
-	// Obtener respuestas
 	responses, err := c.Service.GetResponses()
 	if err != nil {
 		return fmt.Errorf("error getting responses: %w", err)
@@ -124,7 +120,6 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 		fmt.Printf("%+v\n", response)
 	}
 
-	// Obtener claves para la calificación
 	cypherCodes, err := c.Service.GetClavesToCalification()
 	if err != nil {
 		return fmt.Errorf("error getting claves to calification: %w", err)
@@ -137,7 +132,6 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 		fmt.Printf("%+v\n", cypherCode)
 	}
 
-	// Obtener registros de estudiantes y identidades
 	studentAndIdentities, err := c.Service.FindAllStudentAndIdentity()
 	if err != nil {
 		return fmt.Errorf("error getting student and identity: %w", err)
@@ -150,7 +144,6 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 		fmt.Printf("%+v\n", studentAndIdentity)
 	}
 
-	// Crear un mapa para las identidades por litho normalizado
 	identityMap := make(map[int]models.StudentAndIdentity)
 	for _, record := range studentAndIdentities {
 		if record.Litho == "" {
@@ -167,23 +160,15 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 	fmt.Printf("Identity Map (first 5 entries):\n")
 	count := 0
 	for key, value := range identityMap {
-		// if count >= 5 {
-		// 	break
-		// }
 		fmt.Printf("%d: %+v\n", key, value)
 		count++
 	}
 
-	// Procesar respuestas
 	var emptyLithoCount int
 	for _, response := range responses {
-		// if i >= 5 {
-		// 	break
-		// }
 		if response.Litho == "" {
 			fmt.Printf("Skipping response with empty litho for student ID: %d\n", response.StudentID)
 			emptyLithoCount++
-			// Registrar calificación de 0 en todas las categorías
 			fmt.Printf("Response Code: %d, Tema: N/A, Correctas: 0, Incorrectas: 0, Sin Responder: 0\n", response.StudentID)
 			continue
 		}
@@ -195,10 +180,8 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 		}
 
 		if identity, exists := identityMap[normalizedLitho]; exists {
-			// Obtener el tema del estudiante
 			tema := identity.Tema
 
-			// Calcular la calificación según el tema
 			correctas, incorrectas, sinResponder := c.calificarRespuestas(response, cypherCodes, tema, identity.Litho)
 
 			fmt.Printf("Response Code: %d, Tema: %s, Correctas: %d, Incorrectas: %d, Sin Responder: %d\n",
@@ -208,7 +191,6 @@ func (c *CreateOperation) handleTable3(ctx context.Context) error {
 		}
 	}
 
-	// Mostrar resumen de respuestas con litho vacío
 	fmt.Printf("Total responses with empty litho: %d\n", emptyLithoCount)
 
 	return nil
@@ -245,7 +227,7 @@ func (c *CreateOperation) calificarRespuestas(response models.StudentResponse, c
 				questionsEvaluated++
 			}
 
-			err := c.Service.InsertResponse(correctas, incorrectas, sinResponder, litho)
+			err := c.Service.InsertResponse(response.Code, response.Tema, correctas, incorrectas, sinResponder, litho)
 			if err != nil {
 				fmt.Printf("Error inserting response for Student Code: %d, Litho: %s, Tema: %s\n", response.StudentID, litho, tema)
 				return 0, 0, 0

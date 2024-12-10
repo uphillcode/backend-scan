@@ -74,3 +74,11 @@ func (r *repository) UpdateData(id uint, updates map[string]interface{}) (models
 	}
 	return entity, nil
 }
+
+func (r *repository) FindAllHistoryAndCalifications() ([]models.StudentResponse, error) {
+	var studentResponses []models.StudentResponse
+	if err := r.db.Preload("Student").Preload("Calendars").Find(&studentResponses).Error; err != nil {
+		return nil, err
+	}
+	return studentResponses, nil
+}

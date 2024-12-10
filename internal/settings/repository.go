@@ -23,7 +23,7 @@ type Repository interface {
 	FindAllResponses() ([]models.StudentResponse, error)
 	FindAllStudentAndIdentity() ([]models.StudentAndIdentity, error)
 	GetClavesToCalification() ([]models.Cypher_code, error)
-	InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error
+	InsertResponse(code string, tema string, correctas int, incorrectas int, sinResponder int, litho string) error
 }
 
 type repository struct {
@@ -101,7 +101,7 @@ func (r *repository) InsertDuplicateInNewTable(columnValue string, count int, ta
 		ColumnValue: columnValue,
 		Count:       count,
 		Table:       table,
-		CalendarsID: 1,
+		CalendarsID: 2,
 	}
 	return r.db.Omit("updated_at", "deleted_at").Create(&duplicate).Error
 }
@@ -175,17 +175,20 @@ func (r *repository) GetClavesToCalification() ([]models.Cypher_code, error) {
 }
 
 // InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error
-func (r *repository) InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error {
+func (r *repository) InsertResponse(code string, tema string, correctas int, incorrectas int, sinResponder int, litho string) error {
+	var scoreExam = (float64(sinResponder) * 0.5) + float64(correctas*5)
 	response := models.History{
 		// Code: ,
-		Litho: litho,
-		// Tema:        count,
+
+		Code:       code,
+		Litho:      litho,
+		Tema:       tema,
 		Unanswered: sinResponder,
 		Correct:    correctas,
 		Incorrect:  incorrectas,
-		// Score:       count,
+		Score:      scoreExam,
 		// CreatedAt:   count,
 		CalendarsID: 1,
 	}
-	return r.db.Omit("code", "tema", "score", "updated_at", "deleted_at").Create(&response).Error
+	return r.db.Omit("updated_at", "deleted_at").Create(&response).Error
 }

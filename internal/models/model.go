@@ -90,14 +90,15 @@ type FilterDto struct {
 }
 
 type History struct {
-	Id          uint      `gorm:"primaryKey" json:"id"`
-	Code        string    `json:"code_student"`
+	Id uint `gorm:"primaryKey" json:"id"`
+	// Code        string    `json:"code_student"`
+	Code        string    `json:"code_student" gorm:"column:code_student"`
 	Litho       string    `json:"litho"`
 	Tema        string    `json:"tema"`
 	Unanswered  int       `json:"unanswered"`
 	Correct     int       `json:"correct"`
 	Incorrect   int       `json:"incorrect"`
-	Score       string    `json:"score"`
+	Score       float64   `json:"score"`
 	CreatedAt   time.Time `json:"created_at" gorm:"default:CURRENT_TIMESTAMP"`
 	DeletedAt   string    `json:"deleted_at"`
 	UpdatedAt   string    `json:"updated_at"`
@@ -297,4 +298,9 @@ type Duplicate struct {
 	DeletedAt   string    `gorm:"deleted_at"`
 	UpdatedAt   string    `gorm:"updated_at"`
 	CalendarsID uint      `json:"calendars_id"`
+}
+
+type HistoryAndCalifications struct {
+	History
+	StudentAndIdentity
 }

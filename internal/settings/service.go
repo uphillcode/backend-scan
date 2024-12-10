@@ -22,7 +22,7 @@ type Service interface {
 	GetResponses() ([]models.StudentResponse, error)
 	FindAllStudentAndIdentity() ([]models.StudentAndIdentity, error)
 	GetClavesToCalification() ([]models.Cypher_code, error)
-	InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error
+	InsertResponse(code string, tema string, correctas int, incorrectas int, sinResponder int, litho string) error
 }
 
 type service struct {
@@ -84,6 +84,6 @@ func (s *service) GetClavesToCalification() ([]models.Cypher_code, error) {
 	return s.repo.GetClavesToCalification()
 }
 
-func (s *service) InsertResponse(correctas int, incorrectas int, sinResponder int, litho string) error {
-	return s.repo.InsertResponse(correctas, incorrectas, sinResponder, litho)
+func (s *service) InsertResponse(tema string, code string, correctas int, incorrectas int, sinResponder int, litho string) error {
+	return s.repo.InsertResponse(tema, code, correctas, incorrectas, sinResponder, litho)
 }
